@@ -1,0 +1,9 @@
+/Volumes/Intel SSD/VScode/projects/spl-swap/anchor/target/sbpf-solana-solana/release/deps/solana_loader_v3_interface-98b29e13884ca323.d: /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/lib.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/instruction.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/state.rs
+
+/Volumes/Intel SSD/VScode/projects/spl-swap/anchor/target/sbpf-solana-solana/release/deps/libsolana_loader_v3_interface-98b29e13884ca323.rlib: /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/lib.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/instruction.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/state.rs
+
+/Volumes/Intel SSD/VScode/projects/spl-swap/anchor/target/sbpf-solana-solana/release/deps/libsolana_loader_v3_interface-98b29e13884ca323.rmeta: /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/lib.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/instruction.rs /Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/state.rs
+
+/Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/lib.rs:
+/Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/instruction.rs:
+/Users/x0rc1ph3r/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-loader-v3-interface-5.0.0/src/state.rs:
