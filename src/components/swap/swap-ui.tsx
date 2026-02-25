@@ -119,8 +119,8 @@ const translations = {
 const MOCK_DATA = {
   t22Name: 'MEA',
   splName: 'MEA-SPL',
-  t22Exchanges: ['HTX', 'Gate.io', 'MEXC'],
-  splExchanges: ['Raydium', 'Jupiter', 'Orca'],
+  t22Exchanges: ['MEXC', 'BingX', 'BitMart', 'LBank', 'Biconomy.com'],
+  splExchanges: ['TBD'],
 }
 
 // --- Sub-components for Token Badges (Theme Aware) ---
