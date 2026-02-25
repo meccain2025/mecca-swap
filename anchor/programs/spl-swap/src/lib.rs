@@ -7,10 +7,10 @@ use anchor_spl::{
     token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
-declare_id!("3kKTmWvgAUmz1jdUMJhUo2hnytJSWh3e7naTRPEN8uYu");
+declare_id!("6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq");
 
-pub const MEA_SPL2022_MINT: Pubkey = pubkey!("AvVBjJboAbFJqCpHvMkECiJYs1rSEFTpQZdJAKMsyctR");
-pub const MEA_SPL_MINT: Pubkey = pubkey!("78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL");
+pub const MEA_SPL2022_MINT: Pubkey = pubkey!("mecySk7eSawDNfAXvW3CquhLyxyKaXExFXgUUbEZE1T");
+pub const MEA_SPL_MINT: Pubkey = pubkey!("MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem");
 
 #[program]
 pub mod spl_swap {

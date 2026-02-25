@@ -149,44 +149,44 @@ export default function AdminPanel() {
   }
 
   // Simulated Handlers
-  const handleWithdraw = (e: React.FormEvent) => {
+  const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault()
-    withdrawFeesMutation.mutate()
+    await withdrawFeesMutation.mutateAsync()
     showToast(t.toastWithdraw)
   }
 
-  const handleAddSpl = (e: React.FormEvent) => {
+  const handleAddSpl = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!addSplAmount || isNaN(Number(addSplAmount))) return
     const raw = uiToRaw(addSplAmount, 6)
-    addSplReserveMutation.mutate(raw.toString())
+    await addSplReserveMutation.mutateAsync(raw.toString())
     showToast(t.toastAddSpl.replace('{amount}', addSplAmount))
     setAddSplAmount('')
   }
 
-  const handleAdd2022 = (e: React.FormEvent) => {
+  const handleAdd2022 = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!add2022Amount || isNaN(Number(add2022Amount))) return
     const raw = uiToRaw(add2022Amount, 6)
-    add2022ReserveMutation.mutate(raw.toString())
+    await add2022ReserveMutation.mutateAsync(raw.toString())
     showToast(t.toastAdd2022.replace('{amount}', add2022Amount))
     setAdd2022Amount('')
   }
 
-  const handleChangeFee = (e: React.FormEvent) => {
+  const handleChangeFee = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newFee) return
     const feeBps = Math.round(Number(newFee) * 100)
     if (isNaN(feeBps) || feeBps < 0 || feeBps > 10000) return
-    updateFeeMutation.mutate(feeBps)
+    await updateFeeMutation.mutateAsync(feeBps)
     showToast(t.toastFee.replace('{fee}', newFee))
     setNewFee('')
   }
 
-  const handleChangeAdmin = (e: React.FormEvent) => {
+  const handleChangeAdmin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newAdmin) return
-    updateAdminMutation.mutate(newAdmin)
+    await updateAdminMutation.mutateAsync(newAdmin)
     showToast(t.toastAdmin.replace('{admin}', newAdmin))
     setNewAdmin('')
   }

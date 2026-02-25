@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/spl_swap.json`.
  */
 export type SplSwap = {
-  "address": "3kKTmWvgAUmz1jdUMJhUo2hnytJSWh3e7naTRPEN8uYu",
+  "address": "6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq",
   "metadata": {
     "name": "splSwap",
     "version": "0.1.0",
@@ -371,7 +371,7 @@ export type SplSwap = {
         },
         {
           "name": "meaSpl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "tokenProgram"
@@ -800,7 +800,7 @@ export type SplSwap = {
         },
         {
           "name": "meaSpl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea2022"
@@ -1187,7 +1187,7 @@ export type SplSwap = {
         },
         {
           "name": "meaSpl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea2022"
@@ -1588,7 +1588,7 @@ export type SplSwap = {
         },
         {
           "name": "meaSpl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea2022"

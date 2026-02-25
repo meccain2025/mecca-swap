@@ -1,5 +1,5 @@
 {
-  "address": "3kKTmWvgAUmz1jdUMJhUo2hnytJSWh3e7naTRPEN8uYu",
+  "address": "6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq",
   "metadata": {
     "name": "spl_swap",
     "version": "0.1.0",
@@ -365,7 +365,7 @@
         },
         {
           "name": "mea_spl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "token_program"
@@ -794,7 +794,7 @@
         },
         {
           "name": "mea_spl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea_2022"
@@ -1181,7 +1181,7 @@
         },
         {
           "name": "mea_spl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea_2022"
@@ -1582,7 +1582,7 @@
         },
         {
           "name": "mea_spl",
-          "address": "78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL"
+          "address": "MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem"
         },
         {
           "name": "mea_2022"
