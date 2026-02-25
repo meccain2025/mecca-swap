@@ -43,7 +43,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
         <div className="hidden md:flex items-center gap-4">
           <WalletButton />
-          <ClusterUiSelect />
+          {/* <ClusterUiSelect /> */}
           <ThemeSelect />
         </div>
 
@@ -65,7 +65,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
               </ul>
               <div className="flex flex-col gap-4">
                 <WalletButton />
-                <ClusterUiSelect />
+                {/* <ClusterUiSelect /> */}
                 <ThemeSelect />
               </div>
             </div>

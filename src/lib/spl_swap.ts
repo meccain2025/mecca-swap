@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/spl_swap.json`.
  */
 export type SplSwap = {
-  "address": "FkC52qZsfzR4gxwV8Si7T69zz7Mh6QJ4rWhjVr3SYG8P",
+  "address": "3kKTmWvgAUmz1jdUMJhUo2hnytJSWh3e7naTRPEN8uYu",
   "metadata": {
     "name": "splSwap",
     "version": "0.1.0",
