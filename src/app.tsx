@@ -11,6 +11,7 @@ const links = [
 ]
 
 const LazyCounter = lazy(() => import('@/components/swap/swap-ui'))
+const LazyAdmin = lazy(() => import('@/components/admin/admin-ui'))
 
 const routes: RouteObject[] = [
   { index: true, element: <LazyCounter /> },
@@ -21,7 +22,7 @@ const routes: RouteObject[] = [
   //     { path: ':address', element: <LazyAccountDetail /> },
   //   ],
   // },
-  // { path: 'counter', element: <LazyCounter /> },
+  { path: 'admin', element: <LazyAdmin /> },
 ]
 
 console.log({ links, routes })
