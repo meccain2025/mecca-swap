@@ -1,5 +1,9 @@
+import { PublicKey } from '@solana/web3.js'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+
+export const MEA_SPL2022_MINT: PublicKey = new PublicKey('AvVBjJboAbFJqCpHvMkECiJYs1rSEFTpQZdJAKMsyctR')
+export const MEA_SPL_MINT: PublicKey = new PublicKey('78cBBeErJRUVwKia3DMav2iFzEaj2KK5G3F6jLsW4umL')
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

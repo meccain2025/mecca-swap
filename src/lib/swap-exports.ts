@@ -1,8 +1,8 @@
 // Here we export some useful types and functions for interacting with the Anchor program.
 import { AnchorProvider, Program } from '@coral-xyz/anchor'
 import { Cluster, PublicKey } from '@solana/web3.js'
-import SplSwapIDL from '../target/idl/spl_swap.json'
-import type { SplSwap } from '../target/types/spl_swap'
+import SplSwapIDL from './spl_swap.json'
+import type { SplSwap } from './spl_swap'
 
 // Re-export the generated IDL and type
 export { SplSwap, SplSwapIDL }
