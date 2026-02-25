@@ -1,6 +1,6 @@
 import { getSwapProgram, getSwapProgramId } from '@/lib/swap-exports'
 import { useConnection } from '@solana/wallet-adapter-react'
-import { Cluster, PublicKey } from '@solana/web3.js'
+import { Cluster, Connection, PublicKey } from '@solana/web3.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useCluster } from '@/components/cluster/cluster-data-access'
@@ -8,8 +8,13 @@ import { useAnchorProvider } from '@/components/solana/use-anchor-provider'
 import { useTransactionToast } from '@/components/use-transaction-toast'
 import { toast } from 'sonner'
 import * as anchor from '@coral-xyz/anchor'
-import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from '@solana/spl-token'
-import { MEA_SPL2022_MINT } from '@/lib/utils'
+import {
+  TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddressSync,
+  AccountLayout,
+} from '@solana/spl-token'
+import { MEA_SPL2022_MINT, MEA_SPL_MINT } from '@/lib/utils'
 
 export function useSwapProgram() {
   const { connection } = useConnection()
@@ -23,6 +28,91 @@ export function useSwapProgram() {
   const statePda = useMemo(() => {
     return PublicKey.findProgramAddressSync([Buffer.from('state')], program.programId)[0]
   }, [program])
+
+  const vaultPda = useMemo(() => {
+    return PublicKey.findProgramAddressSync([Buffer.from('vault')], program.programId)[0]
+  }, [program])
+
+  const treasuryPda = useMemo(() => {
+    return PublicKey.findProgramAddressSync([Buffer.from('treasury')], program.programId)[0]
+  }, [program])
+
+  const vaultSplAta = useMemo(() => {
+    return getAssociatedTokenAddressSync(MEA_SPL_MINT, vaultPda, true, TOKEN_PROGRAM_ID)
+  }, [vaultPda])
+
+  const vaultSpl22Ata = useMemo(() => {
+    return getAssociatedTokenAddressSync(MEA_SPL2022_MINT, vaultPda, true, TOKEN_2022_PROGRAM_ID)
+  }, [vaultPda])
+
+  const treasurySplAta = useMemo(() => {
+    return getAssociatedTokenAddressSync(MEA_SPL_MINT, treasuryPda, true, TOKEN_PROGRAM_ID)
+  }, [treasuryPda])
+
+  const treasurySpl22Ata = useMemo(() => {
+    return getAssociatedTokenAddressSync(MEA_SPL2022_MINT, treasuryPda, true, TOKEN_2022_PROGRAM_ID)
+  }, [treasuryPda])
+
+  type TokenBalance = {
+    ata: PublicKey
+    // mint: PublicKey;
+    // owner: PublicKey;
+    amount: string
+    // decimals: number;
+  }
+
+  const useMultipleBalances = (connection: Connection, atas: PublicKey[]) => {
+    return useQuery({
+      queryKey: ['multi-balances', atas.map((a) => a.toBase58())],
+      enabled: atas.length > 0,
+      queryFn: async (): Promise<(TokenBalance | null)[]> => {
+        const accounts = await connection.getMultipleAccountsInfo(atas)
+
+        return accounts.map((acc, index) => {
+          if (!acc) return null
+
+          // Ensure it's a token account (SPL or 2022)
+          if (!acc.owner.equals(TOKEN_PROGRAM_ID) && !acc.owner.equals(TOKEN_2022_PROGRAM_ID)) {
+            return null
+          }
+
+          const decoded = AccountLayout.decode(acc.data)
+
+          // const mint = new PublicKey(decoded.mint);
+          // const owner = new PublicKey(decoded.owner);
+
+          const rawAmount = BigInt(decoded.amount.toString())
+
+          // 6 decimals
+          const decimals = 6n
+          const divisor = 10n ** decimals
+
+          // integer part
+          const whole = rawAmount / divisor
+
+          // fractional part (scaled to 4 decimals)
+          const fraction = (rawAmount % divisor) / 10n ** (decimals - 4n)
+
+          // format safely
+          const uiAmount = `${whole}.${fraction.toString().padStart(4, '0')}`
+
+          return {
+            ata: atas[index],
+            // mint,
+            // owner,
+            amount: uiAmount,
+          }
+        })
+      },
+    })
+  }
+
+  const { data: balances } = useMultipleBalances(connection, [
+    vaultSplAta,
+    vaultSpl22Ata,
+    treasurySplAta,
+    treasurySpl22Ata,
+  ])
 
   const getProgramAccount = useQuery({
     queryKey: ['get-program-account', cluster],
@@ -75,8 +165,8 @@ export function useSwapProgram() {
 
   const updateAdminMutation = useMutation({
     mutationKey: ['swap-state', 'updateAdmin', cluster],
-    mutationFn: (newAdmin: PublicKey) => {
-      return program.methods.updateAdmin(newAdmin).rpc()
+    mutationFn: (newAdmin: string) => {
+      return program.methods.updateAdmin(new PublicKey(newAdmin)).rpc()
     },
     onSuccess: async (tx) => {
       transactionToast(tx)
@@ -103,6 +193,9 @@ export function useSwapProgram() {
     },
     onSuccess: async (tx) => {
       transactionToast(tx)
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'multi-balances',
+      })
     },
     onError: (error) => {
       console.error('Withdraw fees failed:', error)
@@ -122,6 +215,9 @@ export function useSwapProgram() {
     },
     onSuccess: async (tx) => {
       transactionToast(tx)
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'multi-balances',
+      })
     },
     onError: (error) => {
       console.error('Add 2022 reserve failed:', error)
@@ -135,6 +231,9 @@ export function useSwapProgram() {
     },
     onSuccess: async (tx) => {
       transactionToast(tx)
+      queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'multi-balances',
+      })
     },
     onError: (error) => {
       console.error('Add SPL reserve failed:', error)
@@ -194,5 +293,6 @@ export function useSwapProgram() {
     addSplReserveMutation,
     swapSplTo2022,
     swap2022ToSpl,
+    balances,
   }
 }

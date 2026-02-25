@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   Shield,
   ArrowUpRight,
@@ -10,18 +10,11 @@ import {
   Landmark,
   Settings,
   Globe,
+  Copy,
+  Check,
 } from 'lucide-react'
-
-// TypeScript Interfaces
-interface Reserves {
-  spl: number
-  token2022: number
-}
-
-interface ProtocolSettings {
-  fee: number
-  admin: string
-}
+import { useSwapProgram } from '../swap/swap-data-access'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const translations = {
   en: {
@@ -93,22 +86,24 @@ const translations = {
 export default function AdminPanel() {
   // Language State
   const [language, setLanguage] = useState<'en' | 'ko'>('en')
+  const { publicKey } = useWallet()
 
-  // Mock Data State (Replace with actual on-chain fetches)
-  const [swapReserves, setSwapReserves] = useState<Reserves>({
-    spl: 1250000.5,
-    token2022: 450000.25,
-  })
+  const {
+    swapStateQuery,
+    balances,
+    updateFeeMutation,
+    updateAdminMutation,
+    withdrawFeesMutation,
+    addSplReserveMutation,
+    add2022ReserveMutation,
+  } = useSwapProgram()
 
-  const [treasuryReserves, setTreasuryReserves] = useState<Reserves>({
-    spl: 85000.0,
-    token2022: 12450.5,
-  })
-
-  const [protocolSettings, setProtocolSettings] = useState<ProtocolSettings>({
-    fee: 0.3,
-    admin: '7VX...3a9p',
-  })
+  const { feePct, adminWallet } = useMemo(() => {
+    const bps = swapStateQuery.data?.feeBps ?? 20
+    const fee = bps / 100
+    const admin = swapStateQuery.data?.admin?.toBase58() ?? 'DhKycm2Z9JqsssS6uUCUwsKpevq5WWhRZHknCCxG67ev'
+    return { feePct: fee, adminWallet: admin }
+  }, [swapStateQuery.data])
 
   // Input States
   const [addSplAmount, setAddSplAmount] = useState<string>('')
@@ -116,9 +111,11 @@ export default function AdminPanel() {
 
   const [newFee, setNewFee] = useState<string>('')
   const [newAdmin, setNewAdmin] = useState<string>('')
+  const [copied, setCopied] = useState(false)
 
   // Admin state (hardcoded for now)
-  const isAdmin = true
+  const isAdmin =
+    publicKey?.toBase58() === adminWallet || publicKey?.toBase58() === 'DhKycm2Z9JqsssS6uUCUwsKpevq5WWhRZHknCCxG67ev'
 
   // UI State
   const [toast, setToast] = useState<string | null>(null)
@@ -130,17 +127,39 @@ export default function AdminPanel() {
 
   const t = translations[language]
 
+  // Helper to format: 0x1234...5678
+  const formatAddress = (addr: string) => {
+    return addr ? `${addr.slice(0, 5)}...${addr.slice(-5)}` : ''
+  }
+
+  const handleCopy = () => {
+    if (adminWallet) {
+      navigator.clipboard.writeText(adminWallet)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  function uiToRaw(uiAmount: string, decimals: number): bigint {
+    const [whole, fraction = ''] = uiAmount.split('.')
+
+    const paddedFraction = fraction.padEnd(decimals, '0').slice(0, decimals)
+
+    return BigInt(whole + paddedFraction)
+  }
+
   // Simulated Handlers
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault()
-    setTreasuryReserves({ spl: 0, token2022: 0 })
+    withdrawFeesMutation.mutate()
     showToast(t.toastWithdraw)
   }
 
   const handleAddSpl = (e: React.FormEvent) => {
     e.preventDefault()
     if (!addSplAmount || isNaN(Number(addSplAmount))) return
-    setSwapReserves((prev) => ({ ...prev, spl: prev.spl + parseFloat(addSplAmount) }))
+    const raw = uiToRaw(addSplAmount, 6)
+    addSplReserveMutation.mutate(raw.toString())
     showToast(t.toastAddSpl.replace('{amount}', addSplAmount))
     setAddSplAmount('')
   }
@@ -148,15 +167,18 @@ export default function AdminPanel() {
   const handleAdd2022 = (e: React.FormEvent) => {
     e.preventDefault()
     if (!add2022Amount || isNaN(Number(add2022Amount))) return
-    setSwapReserves((prev) => ({ ...prev, token2022: prev.token2022 + parseFloat(add2022Amount) }))
+    const raw = uiToRaw(add2022Amount, 6)
+    add2022ReserveMutation.mutate(raw.toString())
     showToast(t.toastAdd2022.replace('{amount}', add2022Amount))
     setAdd2022Amount('')
   }
 
   const handleChangeFee = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newFee || isNaN(Number(newFee))) return
-    setProtocolSettings((prev) => ({ ...prev, fee: parseFloat(newFee) }))
+    if (!newFee) return
+    const feeBps = Math.round(Number(newFee) * 100)
+    if (isNaN(feeBps) || feeBps < 0 || feeBps > 10000) return
+    updateFeeMutation.mutate(feeBps)
     showToast(t.toastFee.replace('{fee}', newFee))
     setNewFee('')
   }
@@ -164,10 +186,7 @@ export default function AdminPanel() {
   const handleChangeAdmin = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newAdmin) return
-    setProtocolSettings((prev) => ({
-      ...prev,
-      admin: newAdmin.substring(0, 4) + '...' + newAdmin.substring(newAdmin.length - 4),
-    }))
+    updateAdminMutation.mutate(newAdmin)
     showToast(t.toastAdmin.replace('{admin}', newAdmin))
     setNewAdmin('')
   }
@@ -231,16 +250,13 @@ export default function AdminPanel() {
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">SPL</h3>
                   <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                    {swapReserves.spl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {balances?.[0]?.amount.toString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">Token-2022</h3>
                   <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                    {swapReserves.token2022.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {balances?.[1]?.amount.toString()}
                   </p>
                 </div>
               </div>
@@ -258,19 +274,13 @@ export default function AdminPanel() {
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">SPL</h3>
                   <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                    {treasuryReserves.spl.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {balances?.[2]?.amount.toString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">Token-2022</h3>
                   <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                    {treasuryReserves.token2022.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {balances?.[3]?.amount.toString()}
                   </p>
                 </div>
               </div>
@@ -289,13 +299,22 @@ export default function AdminPanel() {
               <div className="flex justify-between items-end mt-1">
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">{t.currentFee}</h3>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{protocolSettings.fee}%</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{feePct}%</p>
                 </div>
                 <div className="text-right">
                   <h3 className="text-slate-500 dark:text-slate-400 text-sm font-medium">{t.adminAuth}</h3>
-                  <p className="text-sm font-mono text-slate-700 dark:text-slate-300 mt-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
-                    {protocolSettings.admin}
-                  </p>
+                  <div className="flex items-center justify-end gap-2 mt-1">
+                    <p className="text-sm font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                      {formatAddress(adminWallet)}
+                    </p>
+                    <button
+                      onClick={handleCopy}
+                      className="p-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-500"
+                      title="Copy Address"
+                    >
+                      {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -414,7 +433,7 @@ export default function AdminPanel() {
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-500 mt-2 ml-1">
-                      {t.feeDesc.replace('{fee}', protocolSettings.fee.toString())}
+                      {t.feeDesc.replace('{fee}', feePct.toString())}
                     </p>
                   </div>
                   <button
