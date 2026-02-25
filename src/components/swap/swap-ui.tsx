@@ -1,5 +1,17 @@
 import React, { useState, useMemo } from 'react'
-import { Wallet, Info, Copy, ExternalLink, HelpCircle, X, Lock, AlertCircle, ArrowDown, Loader2 } from 'lucide-react'
+import {
+  Wallet,
+  Info,
+  Copy,
+  ExternalLink,
+  HelpCircle,
+  X,
+  Lock,
+  AlertCircle,
+  ArrowDown,
+  Loader2,
+  CheckCircle2,
+} from 'lucide-react'
 import { useSwapProgram } from './swap-data-access'
 import { MEA_SPL2022_MINT, MEA_SPL_MINT } from '@/lib/utils'
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -59,6 +71,7 @@ const translations = {
     connectWallet: '지갑 연결',
     connected: '연결됨',
     copied: '복사되었습니다!',
+    successSwap: '스왑 성공',
   },
   en: {
     pageTitle: '1:1 Swap',
@@ -113,6 +126,7 @@ const translations = {
     connectWallet: 'Connect Wallet',
     connected: 'Connected',
     copied: 'Copied!',
+    successSwap: 'Swap Successful',
   },
 }
 
@@ -164,6 +178,14 @@ export default function SwapUi() {
 
   const t = translations[lang]
 
+  // UI State
+  const [toast, setToast] = useState<string | null>(null)
+
+  const showToast = (message: string) => {
+    setToast(message)
+    setTimeout(() => setToast(null), 3000)
+  }
+
   // --- Calculations ---
   const { feeAmount, userReceives, numAmount } = useMemo(() => {
     const num = parseFloat(amountIn) || 0
@@ -172,16 +194,24 @@ export default function SwapUi() {
     return { numAmount: num, feeAmount: fee, userReceives: num - fee }
   }, [amountIn, swapStateQuery.data])
 
-  const handleSwap = () => {
+  const handleSwap = async () => {
     if (numAmount <= 0) return
     const rawAmount = (numAmount * Math.pow(10, 6)).toString() // decimals
-    activeMutation.mutate(rawAmount)
+    await activeMutation.mutateAsync(rawAmount)
+    showToast(t.successSwap)
   }
 
   const renderHTML = (rawHTML: string) => React.createElement('span', { dangerouslySetInnerHTML: { __html: rawHTML } })
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0A0A0B] text-slate-900 dark:text-white font-sans transition-colors duration-300 relative overflow-hidden">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-max max-w-[90vw] bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-5 z-50">
+          <CheckCircle2 size={18} />
+          <span className="text-sm font-medium">{toast}</span>
+        </div>
+      )}
       {/* Background Gradients */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#9945FF] rounded-full blur-[150px] opacity-10 dark:opacity-20 pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#14F195] rounded-full blur-[150px] opacity-10 dark:opacity-10 pointer-events-none"></div>
@@ -331,7 +361,9 @@ export default function SwapUi() {
 
             <div className="bg-slate-100 dark:bg-black/30 rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 text-sm">
               <div className="flex justify-between text-slate-600 dark:text-gray-400">
-                <span>{swapStateQuery.data ? `Fee (${(swapStateQuery.data.feeBps / 100).toFixed(1)}%)` : t.labelFee}</span>
+                <span>
+                  {swapStateQuery.data ? `Fee (${(swapStateQuery.data.feeBps / 100).toFixed(1)}%)` : t.labelFee}
+                </span>
                 <span className="text-[#14F195] font-medium">{feeAmount.toFixed(4)}</span>
               </div>
             </div>
@@ -468,7 +500,11 @@ export default function SwapUi() {
                 <div className="bg-slate-50 dark:bg-[#1C1D22] p-5 rounded-xl border border-slate-200 dark:border-white/5">
                   <ul className="list-disc list-inside space-y-2 text-sm text-slate-700 dark:text-gray-300 marker:text-[#14F195]">
                     <li>{t.kp1}</li>
-                    <li>{t.kp2 + (swapStateQuery.data ? `${(swapStateQuery.data.feeBps / 100).toFixed(1)}%` : '') + t.kp21}</li>
+                    <li>
+                      {t.kp2 +
+                        (swapStateQuery.data ? `${(swapStateQuery.data.feeBps / 100).toFixed(1)}%` : '') +
+                        t.kp21}
+                    </li>
                     <li>{t.kp3}</li>
                   </ul>
                   <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5">
@@ -497,7 +533,13 @@ export default function SwapUi() {
             </div>
             <ul className="space-y-3 text-sm text-slate-600 dark:text-gray-300">
               <li>{renderHTML(t.helpItem1)}</li>
-              <li>{renderHTML(t.helpItem2 + (swapStateQuery.data ? `${(swapStateQuery.data.feeBps / 100).toFixed(1)}%` : '') + t.helpItem21)}</li>
+              <li>
+                {renderHTML(
+                  t.helpItem2 +
+                    (swapStateQuery.data ? `${(swapStateQuery.data.feeBps / 100).toFixed(1)}%` : '') +
+                    t.helpItem21,
+                )}
+              </li>
               <li>{renderHTML(t.helpItem3)}</li>
             </ul>
           </div>

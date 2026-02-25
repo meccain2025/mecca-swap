@@ -85,7 +85,7 @@ const translations = {
 
 export default function AdminPanel() {
   // Language State
-  const [language, setLanguage] = useState<'en' | 'ko'>('en')
+  const [language, setLanguage] = useState<'en' | 'ko'>('ko')
   const { publicKey } = useWallet()
 
   const {
@@ -195,7 +195,7 @@ export default function AdminPanel() {
     <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 p-4 md:p-8 font-sans transition-colors duration-200">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed top-4 right-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-5 z-50">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-max max-w-[90vw] bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-5 z-50">
           <CheckCircle2 size={18} />
           <span className="text-sm font-medium">{toast}</span>
         </div>
