@@ -295,7 +295,7 @@ export default function SwapUi() {
               <span className="text-xs text-slate-500 block mb-1">{t.labelMint}</span>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-slate-700 dark:text-gray-300 truncate mr-3">
-                  {MEA_SPL2022_MINT.toString()}
+                  {MEA_SPL2022_MINT.toString().slice(0, 18)}...{MEA_SPL2022_MINT.toString().slice(-10)}
                 </span>
                 <button
                   onClick={handle2022Copy}
@@ -499,7 +499,7 @@ export default function SwapUi() {
               <span className="text-xs text-slate-500 block mb-1">{t.labelMint}</span>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-slate-700 dark:text-gray-300 truncate mr-3">
-                  {MEA_SPL_MINT.toString()}
+                  {MEA_SPL_MINT.toString().slice(0, 18)}...{MEA_SPL_MINT.toString().slice(-10)}
                 </span>
                 <button
                   onClick={handleSplCopy}
