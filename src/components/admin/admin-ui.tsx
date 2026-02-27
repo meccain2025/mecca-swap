@@ -206,7 +206,7 @@ export default function AdminPanel() {
           <Shield size={64} className="text-slate-300 dark:text-slate-800/50" strokeWidth={1} />
         </div>
       ) : (
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-11/12 mx-auto space-y-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

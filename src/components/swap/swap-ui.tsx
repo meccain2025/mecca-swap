@@ -249,7 +249,7 @@ export default function SwapUi() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#14F195] rounded-full blur-[150px] opacity-10 dark:opacity-10 pointer-events-none"></div>
 
       <header className="relative z-10 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#0A0A0B]/80 backdrop-blur-md sticky top-0">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="max-w-11/12 mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400">
               {t.pageTitle}
@@ -281,7 +281,7 @@ export default function SwapUi() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <main className="relative z-10 max-w-11/12 mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* LEFT CARD (Token-2022) */}
         <section className="bg-slate-50 dark:bg-[#141518] border border-slate-200 dark:border-white/5 rounded-3xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-6">
