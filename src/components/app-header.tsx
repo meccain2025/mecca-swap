@@ -51,7 +51,7 @@ export function AppHeader() {
           <WalletButton />
           <button
               onClick={() => setLang(isKorean ? 'en' : 'ko')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-bold transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-bold transition-all"
             >
               <Globe size={22} />
               {isKorean ? 'EN' : 'KO'}
