@@ -9,12 +9,12 @@ import {
   CheckCircle2,
   Landmark,
   Settings,
-  Globe,
   Copy,
   Check,
 } from 'lucide-react'
 import { useSwapProgram } from '../swap/swap-data-access'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useLang } from '../lang-provider'
 
 const translations = {
   en: {
@@ -85,7 +85,7 @@ const translations = {
 
 export default function AdminPanel() {
   // Language State
-  const [language, setLanguage] = useState<'en' | 'ko'>('ko')
+  const { isKorean } = useLang()
   const { publicKey } = useWallet()
 
   const {
@@ -125,7 +125,7 @@ export default function AdminPanel() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  const t = translations[language]
+  const t = translations[isKorean ? 'ko' : 'en']
 
   // Helper to format: 0x1234...5678
   const formatAddress = (addr: string) => {
@@ -219,14 +219,14 @@ export default function AdminPanel() {
 
             <div className="flex items-center gap-3">
               {/* Language Toggle */}
-              <button
+              {/* <button
                 onClick={() => setLanguage((prev) => (prev === 'en' ? 'ko' : 'en'))}
                 className="flex items-center gap-2 p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
                 aria-label="Toggle language"
               >
                 <Globe size={18} />
                 {language === 'en' ? 'KO' : 'EN'}
-              </button>
+              </button> */}
 
               {/* Network Badge */}
               <div className="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 shadow-sm">

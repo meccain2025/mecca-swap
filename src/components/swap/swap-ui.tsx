@@ -16,6 +16,7 @@ import {
 import { useSwapProgram } from './swap-data-access'
 import { MEA_SPL2022_MINT, MEA_SPL_MINT } from '@/lib/utils'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useLang } from '../lang-provider'
 
 // --- i18n Dictionary ---
 const translations = {
@@ -166,7 +167,7 @@ const SPLBadge = () => (
 )
 
 export default function SwapUi() {
-  const [lang, setLang] = useState<'ko' | 'en'>('ko')
+  const { isKorean } = useLang()
   const [direction, setDirection] = useState<'t22_to_spl' | 'spl_to_t22'>('t22_to_spl')
   const [amountIn, setAmountIn] = useState('100')
   const [showHelpModal, setShowHelpModal] = useState(false)
@@ -183,7 +184,7 @@ export default function SwapUi() {
   const isSwapping = activeMutation.isPending
   const isWalletConnected = !!publicKey
 
-  const t = translations[lang]
+  const t = translations[isKorean ? 'ko' : 'en']
 
   // UI State
   const [toast, setToast] = useState<string | null>(null)
@@ -268,12 +269,7 @@ export default function SwapUi() {
             >
               <Info className="w-4 h-4 mr-1" /> {t.navDetails}
             </button>
-            <button
-              onClick={() => setLang((l) => (l === 'ko' ? 'en' : 'ko'))}
-              className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-bold transition-all"
-            >
-              {t.langToggle}
-            </button>
+            
             {/* <div className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-medium">
               <Wallet className="w-4 h-4 text-[#14F195]" />
               <span>{isWalletConnected ? 'Connected' : t.connectWallet}</span>

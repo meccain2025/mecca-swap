@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
+import { Globe, Menu, X } from 'lucide-react'
 import { ThemeSelect } from '@/components/theme-select'
 // import { ClusterUiSelect } from './cluster/cluster-ui'
 import { WalletButton } from '@/components/solana/solana-provider'
 import { Link } from 'react-router'
+import { useLang } from './lang-provider'
 
 // { links = [] }: { links: { label: string; path: string }[] }
 export function AppHeader() {
   // const { pathname } = useLocation()
   const [showMenu, setShowMenu] = useState(false)
+  const { isKorean, setLang } = useLang()
 
   // function isActive(path: string) {
   //   return path === '/' ? pathname === '/' : pathname.startsWith(path)
@@ -47,6 +49,13 @@ export function AppHeader() {
 
         <div className="hidden md:flex items-center gap-4">
           <WalletButton />
+          <button
+              onClick={() => setLang(isKorean ? 'en' : 'ko')}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-bold transition-all"
+            >
+              <Globe size={22} />
+              {isKorean ? 'EN' : 'KO'}
+            </button>
           {/* <ClusterUiSelect /> */}
           <ThemeSelect />
         </div>
