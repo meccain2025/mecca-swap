@@ -25,7 +25,7 @@ const translations = {
     detailsTitle: '자세히(검증)',
     ratioLine: '비율 1:1',
     feeLine: '수수료 0.2%',
-    pillLock: '입력 토큰은 락업',
+    pillLock: '토큰 락업',
     navDetails: '자세히(검증)',
     navBackMain: '메인으로',
     langToggle: 'EN',
@@ -74,13 +74,14 @@ const translations = {
     connected: '연결됨',
     copied: '복사되었습니다!',
     successSwap: '스왑 성공',
+    lowBalance: '잔액 부족',
   },
   en: {
     pageTitle: '1:1 Swap',
     detailsTitle: 'Details (Verify)',
     ratioLine: 'Ratio 1:1',
     feeLine: 'Fee 0.2%',
-    pillLock: 'Input tokens are locked',
+    pillLock: 'Tokens locked',
     navDetails: 'Details (Verify)',
     navBackMain: 'Back to Main',
     langToggle: 'KO',
@@ -129,6 +130,7 @@ const translations = {
     connected: 'Connected',
     copied: 'Copied!',
     successSwap: 'Swap Successful',
+    lowBalance: 'Low Balance',
   },
 }
 
@@ -145,7 +147,7 @@ const T22Badge = () => (
     {/* <div className="w-6 h-6 rounded-full bg-[#9945FF] flex items-center justify-center text-[10px] font-bold text-white">
       T22
     </div> */}
-    <img className="w-6 h-6 rounded-full" src="/apple-touch-icon.png" alt="T22" />
+    <img className="w-6 h-6 rounded-full" src="/2022.png" alt="T22" />
     <div className="flex flex-col text-left">
       <span className="text-sm font-bold leading-tight text-slate-900 dark:text-white">{MOCK_DATA.t22Name}</span>
       <span className="text-[10px] text-[#9945FF] leading-tight font-medium">Token-2022</span>
@@ -169,7 +171,7 @@ const SPLBadge = () => (
 export default function SwapUi() {
   const { isKorean } = useLang()
   const [direction, setDirection] = useState<'t22_to_spl' | 'spl_to_t22'>('t22_to_spl')
-  const [amountIn, setAmountIn] = useState('100')
+  const [amountIn, setAmountIn] = useState('')
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const { publicKey } = useWallet()
@@ -179,7 +181,8 @@ export default function SwapUi() {
   const [spl2022VaultCopied, setSpl2022VaultCopied] = useState(false)
 
   // --- Anchor Integration ---
-  const { swapSplTo2022, swap2022ToSpl, swapStateQuery, programId, vaultSpl22Ata, vaultSplAta } = useSwapProgram()
+  const { swapSplTo2022, swap2022ToSpl, swapStateQuery, programId, vaultSpl22Ata, vaultSplAta, userBalances } =
+    useSwapProgram()
   const activeMutation = direction === 'spl_to_t22' ? swapSplTo2022 : swap2022ToSpl
   const isSwapping = activeMutation.isPending
   const isWalletConnected = !!publicKey
@@ -269,7 +272,7 @@ export default function SwapUi() {
             >
               <Info className="w-4 h-4 mr-1" /> {t.navDetails}
             </button>
-            
+
             {/* <div className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm font-medium">
               <Wallet className="w-4 h-4 text-[#14F195]" />
               <span>{isWalletConnected ? 'Connected' : t.connectWallet}</span>
@@ -337,44 +340,89 @@ export default function SwapUi() {
           </div>
 
           <div className="space-y-4">
-            <div className="relative">
+            <div className="flex flex-col relative">
               {/* You Pay Input Area */}
               <div className="bg-slate-50 dark:bg-[#1C1D22] rounded-2xl p-4 border border-slate-200 dark:border-transparent hover:border-slate-300 dark:hover:border-white/5 group transition-colors">
-                <div className="flex justify-between mb-2">
+                {/* Top Row: Label and Token Address */}
+                <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-slate-500 dark:text-gray-400 font-medium">You Pay</span>
+                  <span className="text-xs text-slate-400 dark:text-gray-500 font-mono bg-slate-200/50 dark:bg-white/5 px-2 py-1 rounded-md">
+                    {/* Replace with your actual token address variable */}
+                    {direction === 't22_to_spl'
+                      ? `${MEA_SPL2022_MINT.toString().slice(0, 6)}...${MEA_SPL2022_MINT.toString().slice(-4)}`
+                      : `${MEA_SPL_MINT.toString().slice(0, 6)}...${MEA_SPL_MINT.toString().slice(-4)}`}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
+
+                {/* Middle Row: Input and Token Badge */}
+                <div className="flex items-center justify-between gap-4">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     value={amountIn}
-                    onChange={(e) => setAmountIn(e.target.value)}
-                    className="bg-transparent text-3xl font-semibold outline-none w-full text-slate-900 dark:text-white"
+                    placeholder="0"
+                    onChange={(e) => {
+                      const val = e.target.value
+                      if (val === '' || /^[0-9]*\.?[0-9]*$/.test(val)) {
+                        setAmountIn(val)
+                      }
+                    }}
+                    className="bg-transparent text-3xl font-semibold outline-none w-full text-slate-900 dark:text-white truncate"
                   />
                   {direction === 't22_to_spl' ? <T22Badge /> : <SPLBadge />}
                 </div>
+
+                {/* Bottom Row: Balance and Max Button (Left Aligned) */}
+                <div className="flex justify-start items-center my-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-500 dark:text-gray-400">
+                      Balance:{' '}
+                      {direction === 't22_to_spl'
+                        ? userBalances?.[1]?.amount.toString() || '0'
+                        : userBalances?.[0]?.amount.toString() || '0'}
+                    </span>
+                    <button
+                      onClick={() =>
+                        direction === 't22_to_spl'
+                          ? setAmountIn(userBalances?.[1]?.amount.toString() || '0')
+                          : setAmountIn(userBalances?.[0]?.amount.toString() || '0')
+                      }
+                      className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-1 rounded-md transition-colors z-20 relative"
+                    >
+                      Max
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Swap Toggle Button */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              {/* Swap Toggle Button (Fixed Positioning) */}
+              <div className="flex justify-center -my-5 z-10 relative">
                 <button
-                  onClick={() => setDirection((d) => (d === 't22_to_spl' ? 'spl_to_t22' : 't22_to_spl'))}
+                  onClick={() => {
+                    setDirection(direction === 't22_to_spl' ? 'spl_to_t22' : 't22_to_spl')
+                    setAmountIn('')
+                  }}
                   className="bg-white dark:bg-[#1C1D22] border-[4px] border-slate-100 dark:border-[#16171B] p-2 rounded-xl text-slate-400 hover:text-black dark:hover:text-white shadow-sm transition-all"
                 >
-                  <ArrowDown
-                    className={`w-5 h-5 transition-transform duration-300 ${direction === 'spl_to_t22' ? 'rotate-180' : ''}`}
-                  />
+                  <ArrowDown className="w-5 h-5 transition-transform duration-300" />
                 </button>
               </div>
 
               {/* You Receive Output Area */}
               <div className="bg-slate-50 dark:bg-[#1C1D22] rounded-2xl p-4 mt-1 border border-slate-200 dark:border-transparent">
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-slate-500 dark:text-gray-400 font-medium">You Receive</span>
+                  <span className="text-xs text-slate-400 dark:text-gray-500 font-mono bg-slate-200/50 dark:bg-white/5 px-2 py-1 rounded-md">
+                    {direction === 'spl_to_t22'
+                      ? `${MEA_SPL2022_MINT.toString().slice(0, 6)}...${MEA_SPL2022_MINT.toString().slice(-4)}`
+                      : `${MEA_SPL_MINT.toString().slice(0, 6)}...${MEA_SPL_MINT.toString().slice(-4)}`}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <input
                     type="number"
                     value={userReceives > 0 ? userReceives.toFixed(4) : ''}
+                    placeholder="0"
                     readOnly
                     className="bg-transparent text-3xl font-semibold outline-none w-full text-slate-900 dark:text-white"
                   />
@@ -393,10 +441,26 @@ export default function SwapUi() {
             </div>
 
             <button
-              disabled={numAmount <= 0 || isSwapping || !isWalletConnected}
+              disabled={
+                numAmount <= 0 ||
+                isSwapping ||
+                !isWalletConnected ||
+                (direction === 't22_to_spl'
+                  ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
+                  : parseFloat(userBalances?.[0]?.amount || '0') < numAmount)
+              }
               onClick={handleSwap}
               className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center
-                ${numAmount > 0 && !isSwapping && isWalletConnected ? 'bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white shadow-lg' : 'bg-slate-200 dark:bg-[#2A2B31] text-slate-400 dark:text-gray-500 cursor-not-allowed'}
+                ${
+                  numAmount > 0 &&
+                  !isSwapping &&
+                  isWalletConnected &&
+                  !(direction === 't22_to_spl'
+                    ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
+                    : parseFloat(userBalances?.[0]?.amount || '0') < numAmount)
+                    ? 'bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white shadow-lg'
+                    : 'bg-slate-200 dark:bg-[#2A2B31] text-slate-400 dark:text-gray-500 cursor-not-allowed'
+                }
               `}
             >
               {!isWalletConnected ? (
@@ -407,7 +471,15 @@ export default function SwapUi() {
               ) : (
                 <>
                   {isSwapping && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
-                  {isSwapping ? 'Executing...' : t.btnSwap}
+                  {isSwapping
+                    ? 'Executing...'
+                    : (
+                          direction === 't22_to_spl'
+                            ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
+                            : parseFloat(userBalances?.[0]?.amount || '0') < numAmount
+                        )
+                      ? t.lowBalance
+                      : t.btnSwap}
                 </>
               )}
             </button>
