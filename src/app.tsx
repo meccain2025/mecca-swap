@@ -3,12 +3,12 @@ import { AppLayout } from '@/components/app-layout.tsx'
 import { RouteObject, useRoutes } from 'react-router'
 import { lazy } from 'react'
 
-const links = [
-  //
-  { label: 'Home', path: '/' },
-  // { label: 'Account', path: '/account' },
-  // { label: 'Counter Program', path: '/counter' },
-]
+// const links = [
+  
+//   { label: 'Home', path: '/' },
+//   { label: 'Account', path: '/account' },
+//   { label: 'Counter Program', path: '/counter' },
+// ]
 
 const LazyCounter = lazy(() => import('@/components/swap/swap-ui'))
 const LazyAdmin = lazy(() => import('@/components/admin/admin-ui'))
@@ -25,13 +25,11 @@ const routes: RouteObject[] = [
   { path: 'admin', element: <LazyAdmin /> },
 ]
 
-console.log({ links, routes })
-
 export function App() {
   const router = useRoutes(routes)
   return (
     <AppProviders>
-      <AppLayout links={links}>{router}</AppLayout>
+      <AppLayout>{router}</AppLayout>
     </AppProviders>
   )
 }

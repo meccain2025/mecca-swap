@@ -141,9 +141,10 @@ const MOCK_DATA = {
 // --- Sub-components for Token Badges (Theme Aware) ---
 const T22Badge = () => (
   <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 rounded-full px-3 py-1.5 border border-slate-200 dark:border-white/5 shrink-0 ml-4">
-    <div className="w-6 h-6 rounded-full bg-[#9945FF] flex items-center justify-center text-[10px] font-bold text-white">
+    {/* <div className="w-6 h-6 rounded-full bg-[#9945FF] flex items-center justify-center text-[10px] font-bold text-white">
       T22
-    </div>
+    </div> */}
+    <img className="w-6 h-6 rounded-full" src="/apple-touch-icon.png" alt="T22" />
     <div className="flex flex-col text-left">
       <span className="text-sm font-bold leading-tight text-slate-900 dark:text-white">{MOCK_DATA.t22Name}</span>
       <span className="text-[10px] text-[#9945FF] leading-tight font-medium">Token-2022</span>
@@ -153,9 +154,10 @@ const T22Badge = () => (
 
 const SPLBadge = () => (
   <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 rounded-full px-3 py-1.5 border border-slate-200 dark:border-white/5 shrink-0 ml-4">
-    <div className="w-6 h-6 rounded-full bg-[#14F195] flex items-center justify-center text-[10px] font-bold text-black">
+    {/* <div className="w-6 h-6 rounded-full bg-[#14F195] flex items-center justify-center text-[10px] font-bold text-black">
       SPL
-    </div>
+    </div> */}
+    <img className="w-6 h-6 rounded-full" src="/apple-touch-icon.png" alt="SPL" />
     <div className="flex flex-col text-left">
       <span className="text-sm font-bold leading-tight text-slate-900 dark:text-white">{MOCK_DATA.splName}</span>
       <span className="text-[10px] text-[#14F195] leading-tight font-medium">Standard</span>

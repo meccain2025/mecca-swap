@@ -8,15 +8,15 @@ import React from 'react'
 
 export function AppLayout({
   children,
-  links,
+  // links,
 }: {
   children: React.ReactNode
-  links: { label: string; path: string }[]
+  // links: { label: string; path: string }[]
 }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <div className="flex flex-col min-h-screen">
-        <AppHeader links={links} />
+        <AppHeader />
         <main className="flex-grow w-full flex flex-col">
           {/* <ClusterChecker> */}
             {/* <AccountChecker /> */}
