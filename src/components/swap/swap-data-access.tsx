@@ -294,5 +294,7 @@ export function useSwapProgram() {
     swapSplTo2022,
     swap2022ToSpl,
     balances,
+    vaultSpl22Ata,
+    vaultSplAta,
   }
 }

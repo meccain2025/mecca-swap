@@ -11,6 +11,7 @@ import {
   ArrowDown,
   Loader2,
   CheckCircle2,
+  Check,
 } from 'lucide-react'
 import { useSwapProgram } from './swap-data-access'
 import { MEA_SPL2022_MINT, MEA_SPL_MINT } from '@/lib/utils'
@@ -21,7 +22,6 @@ const translations = {
   ko: {
     pageTitle: '1:1 스왑',
     detailsTitle: '자세히(검증)',
-    detailsSub: '필요 데이터만 모아서 제공합니다.',
     ratioLine: '비율 1:1',
     feeLine: '수수료 0.2%',
     pillLock: '입력 토큰은 락업',
@@ -53,16 +53,17 @@ const translations = {
     helpBottom1: '상세 주소(락업/트레저리)·검증 링크는 ',
     helpBottom2: '에서 확인하십시오.',
     cardAddresses: '주소',
-    rowLockVault: 'Lock Vault (입력 토큰 락업)',
+    row2022LockVault: 'SPL-2022 Lock Vault (토큰 락업)',
+    rowSPLLockVault: 'SPL Lock Vault (토큰 락업)',
     rowTreasury: 'Treasury (수수료 수령)',
     rowExplorer: 'Explorer',
     linkViewLock: 'Lock Vault 보기',
     linkViewTreasury: 'Treasury 보기',
     cardKeyPoints: '공급량/납득 포인트',
     kp1: '스왑 시 입력 토큰은 Lock Vault로 이동(락업)합니다.',
-    kp2: '출력 토큰은 1:1 기준으로 지급되며, 수수료 ',
-    kp21: '는 출력 토큰에서 차감됩니다.',
-    kp3: '좌측(Token-2022)/우측(SPL) 거래지원 거래소를 분리 표기합니다.',
+    kp2: '토큰은 1:1 기준으로 지급되며, 수수료 ',
+    kp21: '는 토큰에서 차감됩니다.',
+    kp3: '토큰 타입별 거래지원 거래소가 다르므로 스왑시 확인하세요.',
     labelExample: '예시',
     exampleText: '1,000개 입력 시 -> 유저 998개 수령 / 트레저리 2개 수령',
     cardTokenInfo: '토큰 정보',
@@ -76,7 +77,6 @@ const translations = {
   en: {
     pageTitle: '1:1 Swap',
     detailsTitle: 'Details (Verify)',
-    detailsSub: 'All necessary data collected for verification.',
     ratioLine: 'Ratio 1:1',
     feeLine: 'Fee 0.2%',
     pillLock: 'Input tokens are locked',
@@ -108,16 +108,17 @@ const translations = {
     helpBottom1: 'For detailed addresses (Lockup/Treasury) and verification links, check ',
     helpBottom2: '.',
     cardAddresses: 'Addresses',
-    rowLockVault: 'Lock Vault (Input Token Lockup)',
+    row2022LockVault: 'SPL-2022 Lock Vault (Token Lockup)',
+    rowSPLLockVault: 'SPL Lock Vault (Token Lockup)',
     rowTreasury: 'Treasury (Fee Collection)',
     rowExplorer: 'Explorer',
     linkViewLock: 'View Lock Vault',
     linkViewTreasury: 'View Treasury',
     cardKeyPoints: 'Supply / Verification Points',
     kp1: 'During a swap, input tokens are moved to the Lock Vault (locked).',
-    kp2: 'Output tokens are given at a 1:1 ratio, and the ',
-    kp21: ' fee is deducted from the output tokens.',
-    kp3: 'Supported exchanges for Left (Token-2022) / Right (SPL) are displayed separately.',
+    kp2: 'Tokens are given at a 1:1 ratio, and the ',
+    kp21: ' fee is deducted from the tokens.',
+    kp3: 'Please check when swapping, as different exchanges support different token types.',
     labelExample: 'Example',
     exampleText: 'Input 1,000 -> User receives 998 / Treasury receives 2',
     cardTokenInfo: 'Token Info',
@@ -169,9 +170,13 @@ export default function SwapUi() {
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const { publicKey } = useWallet()
+  const [t22Copied, set2022Copied] = useState(false)
+  const [splCopied, setSplCopied] = useState(false)
+  const [splVaultCopied, setSplVaultCopied] = useState(false)
+  const [spl2022VaultCopied, setSpl2022VaultCopied] = useState(false)
 
   // --- Anchor Integration ---
-  const { swapSplTo2022, swap2022ToSpl, swapStateQuery, programId } = useSwapProgram()
+  const { swapSplTo2022, swap2022ToSpl, swapStateQuery, programId, vaultSpl22Ata, vaultSplAta } = useSwapProgram()
   const activeMutation = direction === 'spl_to_t22' ? swapSplTo2022 : swap2022ToSpl
   const isSwapping = activeMutation.isPending
   const isWalletConnected = !!publicKey
@@ -201,10 +206,31 @@ export default function SwapUi() {
     showToast(t.successSwap)
   }
 
+  const handle2022Copy = () => {
+    navigator.clipboard.writeText(MEA_SPL2022_MINT.toString())
+    set2022Copied(true)
+    setTimeout(() => set2022Copied(false), 2000)
+  }
+  const handleSplCopy = () => {
+    navigator.clipboard.writeText(MEA_SPL_MINT.toString())
+    setSplCopied(true)
+    setTimeout(() => setSplCopied(false), 2000)
+  }
+  const handleSplVaultCopy = () => {
+    navigator.clipboard.writeText(vaultSplAta.toString())
+    setSplVaultCopied(true)
+    setTimeout(() => setSplVaultCopied(false), 2000)
+  }
+  const handleSpl2022VaultCopy = () => {
+    navigator.clipboard.writeText(vaultSpl22Ata.toString())
+    setSpl2022VaultCopied(true)
+    setTimeout(() => setSpl2022VaultCopied(false), 2000)
+  }
+
   const renderHTML = (rawHTML: string) => React.createElement('span', { dangerouslySetInnerHTML: { __html: rawHTML } })
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0A0A0B] text-slate-900 dark:text-white font-sans transition-colors duration-300 relative overflow-hidden">
+    <div className="bg-white dark:bg-[#0A0A0B] text-slate-900 dark:text-white font-sans transition-colors duration-300 relative overflow-hidden">
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 w-max max-w-[90vw] bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-5 z-50">
@@ -271,10 +297,10 @@ export default function SwapUi() {
                   {MEA_SPL2022_MINT.toString()}
                 </span>
                 <button
-                  onClick={() => navigator.clipboard.writeText(MEA_SPL2022_MINT.toString())}
+                  onClick={handle2022Copy}
                   className="p-2 bg-slate-100 dark:bg-white/5 rounded-lg text-slate-400 hover:text-black dark:hover:text-white"
                 >
-                  <Copy className="w-4 h-4" />
+                  {t22Copied ? <Check className="text-green-500 w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -406,10 +432,10 @@ export default function SwapUi() {
                   {MEA_SPL_MINT.toString()}
                 </span>
                 <button
-                  onClick={() => navigator.clipboard.writeText(MEA_SPL_MINT.toString())}
+                  onClick={handleSplCopy}
                   className="p-2 bg-slate-100 dark:bg-white/5 rounded-lg text-slate-400 hover:text-black dark:hover:text-white"
                 >
-                  <Copy className="w-4 h-4" />
+                  {splCopied ? <Check className="text-green-500 w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -444,7 +470,6 @@ export default function SwapUi() {
                 <strong className="text-xl flex items-center text-slate-900 dark:text-white">
                   <AlertCircle className="w-5 h-5 mr-2 text-[#14F195]" /> {t.detailsTitle}
                 </strong>
-                <span className="text-sm text-slate-500 dark:text-gray-500 mt-1 block">{t.detailsSub}</span>
               </div>
               <button
                 onClick={() => setShowDetailsModal(false)}
@@ -464,17 +489,33 @@ export default function SwapUi() {
                   {/* Example: Displaying Program State PDA or Vaults */}
                   <div className="bg-slate-50 dark:bg-[#1C1D22] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                      <span className="text-xs text-slate-500 block mb-1">{t.rowLockVault}</span>
+                      <span className="text-xs text-slate-500 block mb-1">{t.row2022LockVault}</span>
                       <span className="font-mono text-sm text-slate-700 dark:text-gray-300 break-all">
                         {/* You can replace this with your actual Lock Vault PDA if applicable */}
-                        {MEA_SPL2022_MINT.toString()}
+                        {vaultSpl22Ata.toString()}
                       </span>
                     </div>
                     <button
-                      onClick={() => navigator.clipboard.writeText(MEA_SPL2022_MINT.toString())}
+                      onClick={handleSpl2022VaultCopy}
                       className="p-2 bg-white dark:bg-white/5 rounded-lg text-slate-400 hover:text-black dark:hover:text-white shadow-sm border border-slate-200 dark:border-transparent"
                     >
-                      <Copy className="w-4 h-4" />
+                      {spl2022VaultCopied ? <Check className="text-green-500 w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-[#1C1D22] p-4 rounded-xl border border-slate-200 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <span className="text-xs text-slate-500 block mb-1">{t.rowSPLLockVault}</span>
+                      <span className="font-mono text-sm text-slate-700 dark:text-gray-300 break-all">
+                        {/* You can replace this with your actual Lock Vault PDA if applicable */}
+                        {vaultSplAta.toString()}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleSplVaultCopy}
+                      className="p-2 bg-white dark:bg-white/5 rounded-lg text-slate-400 hover:text-black dark:hover:text-white shadow-sm border border-slate-200 dark:border-transparent"
+                    >
+                      {splVaultCopied ? <Check className="text-green-500 w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
 
