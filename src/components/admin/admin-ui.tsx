@@ -249,13 +249,13 @@ export default function AdminPanel() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">SPL</h3>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
                     {balances?.[0]?.amount.toString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">Token-2022</h3>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
                     {balances?.[1]?.amount.toString()}
                   </p>
                 </div>
@@ -273,13 +273,13 @@ export default function AdminPanel() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">SPL</h3>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
                     {balances?.[2]?.amount.toString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="text-slate-500 dark:text-slate-400 text-xs font-medium">Token-2022</h3>
-                  <p className="text-lg font-bold text-slate-900 dark:text-white mt-1">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
                     {balances?.[3]?.amount.toString()}
                   </p>
                 </div>
