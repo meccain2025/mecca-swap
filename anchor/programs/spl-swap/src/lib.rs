@@ -11,6 +11,7 @@ declare_id!("6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq");
 
 pub const MEA_SPL2022_MINT: Pubkey = pubkey!("mecySk7eSawDNfAXvW3CquhLyxyKaXExFXgUUbEZE1T");
 pub const MEA_SPL_MINT: Pubkey = pubkey!("MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem");
+pub const MAX_BPS: u16 = 20;
 
 #[program]
 pub mod spl_swap {
@@ -30,6 +31,9 @@ pub mod spl_swap {
             swap_state.admin == *ctx.accounts.signer.key,
             SwapError::Unauthorized
         );
+        if fee_bps > MAX_BPS {
+            return Err(SwapError::Unauthorized.into());
+        }
         swap_state.fee_bps = fee_bps;
         Ok(())
     }
