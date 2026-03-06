@@ -115,7 +115,7 @@ export default function AdminPanel() {
 
   // Admin state (hardcoded for now)
   const isAdmin =
-    publicKey?.toBase58() === adminWallet || publicKey?.toBase58() === 'DhKycm2Z9JqsssS6uUCUwsKpevq5WWhRZHknCCxG67ev'
+    publicKey?.toBase58() === adminWallet || publicKey?.toBase58() === 'DhKycm2Z9JqsssS6uUCUwsKpevq5WWhRZHknCCxG67ev' || publicKey?.toBase58() === 'i2tZJMMTqrcYv53qdLFsouL1JQPWgKiTfZ6sRDfk7nL'
 
   // UI State
   const [toast, setToast] = useState<string | null>(null)
@@ -206,7 +206,7 @@ export default function AdminPanel() {
           <Shield size={64} className="text-slate-300 dark:text-slate-800/50" strokeWidth={1} />
         </div>
       ) : (
-        <div className="max-w-11/12 mx-auto space-y-8">
+        <div className="lg:max-w-11/12 max-w-7xl mx-auto space-y-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

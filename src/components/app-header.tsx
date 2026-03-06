@@ -18,7 +18,7 @@ export function AppHeader() {
   // }
 
   return (
-    <header className="relative z-50 px-4 py-2 bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-400">
+    <header className="sticky top-0 z-50 px-4 py-2 bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-400">
       <div className="mx-auto flex justify-between items-center">
         <div className="flex items-baseline gap-4">
           <Link to="/" className="text-xl hover:text-neutral-500 dark:hover:text-white">
@@ -50,12 +50,12 @@ export function AppHeader() {
         <div className="hidden md:flex items-center gap-4">
           <WalletButton />
           <button
-              onClick={() => setLang(isKorean ? 'en' : 'ko')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:dark:bg-input/50 dark:bg-input/30 dark:border-white/10 text-sm font-bold transition-all"
-            >
-              <Globe size={22} />
-              {isKorean ? 'EN' : 'KO'}
-            </button>
+            onClick={() => setLang(isKorean ? 'en' : 'ko')}
+            className="flex w-fit items-center gap-2 px-3 py-1.5 rounded-lg border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:dark:bg-input/50 dark:bg-input/30 dark:border-white/10 text-sm font-bold transition-all"
+          >
+            <Globe size={22} />
+            {isKorean ? 'EN' : 'KO'}
+          </button>
           {/* <ClusterUiSelect /> */}
           <ThemeSelect />
         </div>
@@ -78,6 +78,13 @@ export function AppHeader() {
               </ul> */}
               <div className="flex flex-col gap-4">
                 <WalletButton />
+                <button
+                  onClick={() => setLang(isKorean ? 'en' : 'ko')}
+                  className="flex w-fit items-center gap-2 px-3 py-1.5 rounded-lg border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:dark:bg-input/50 dark:bg-input/30 dark:border-white/10 text-sm font-bold transition-all"
+                >
+                  <Globe size={22} />
+                  {isKorean ? 'EN' : 'KO'}
+                </button>
                 {/* <ClusterUiSelect /> */}
                 <ThemeSelect />
               </div>
