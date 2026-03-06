@@ -19,6 +19,9 @@ pub mod spl_swap {
 
     pub fn initialize(ctx: Context<Initialize>, fee_bps: u16) -> Result<()> {
         let swap_state = &mut ctx.accounts.swap_state;
+        if fee_bps > MAX_BPS {
+            return Err(SwapError::Unauthorized.into());
+        }
         swap_state.initialized = true;
         swap_state.admin = *ctx.accounts.signer.key;
         swap_state.fee_bps = fee_bps;
