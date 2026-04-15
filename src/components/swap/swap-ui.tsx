@@ -16,6 +16,7 @@ import {
 import { useSwapProgram } from './swap-data-access'
 import { MEA_SPL2022_MINT, MEA_SPL_MINT } from '@/lib/utils'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useLang } from '../lang-provider'
 
 // --- i18n Dictionary ---
@@ -175,6 +176,7 @@ export default function SwapUi() {
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const { publicKey } = useWallet()
+  const { setVisible: openWalletModal } = useWalletModal()
   const [t22Copied, set2022Copied] = useState(false)
   const [splCopied, setSplCopied] = useState(false)
   const [splVaultCopied, setSplVaultCopied] = useState(false)
@@ -440,49 +442,47 @@ export default function SwapUi() {
               </div>
             </div>
 
-            <button
-              disabled={
-                numAmount <= 0 ||
-                isSwapping ||
-                !isWalletConnected ||
-                (direction === 't22_to_spl'
-                  ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
-                  : parseFloat(userBalances?.[0]?.amount || '0') < numAmount)
-              }
-              onClick={handleSwap}
-              className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center
-                ${
-                  numAmount > 0 &&
-                  !isSwapping &&
-                  isWalletConnected &&
-                  !(direction === 't22_to_spl'
+            {!isWalletConnected ? (
+              <button
+                onClick={() => openWalletModal(true)}
+                className="w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white shadow-lg"
+              >
+                <Wallet className="w-5 h-5 mr-2" />
+                {t.connectWallet}
+              </button>
+            ) : (
+              <button
+                disabled={
+                  isSwapping ||
+                  (direction === 't22_to_spl'
                     ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
                     : parseFloat(userBalances?.[0]?.amount || '0') < numAmount)
-                    ? 'bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white shadow-lg'
-                    : 'bg-slate-200 dark:bg-[#2A2B31] text-slate-400 dark:text-gray-500 cursor-not-allowed'
                 }
-              `}
-            >
-              {!isWalletConnected ? (
-                <>
-                  <Wallet className="w-5 h-5 mr-2" />
-                  {t.connectWallet}
-                </>
-              ) : (
-                <>
-                  {isSwapping && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
-                  {isSwapping
-                    ? 'Executing...'
-                    : (
-                          direction === 't22_to_spl'
-                            ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
-                            : parseFloat(userBalances?.[0]?.amount || '0') < numAmount
-                        )
-                      ? t.lowBalance
-                      : t.btnSwap}
-                </>
-              )}
-            </button>
+                onClick={handleSwap}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center
+                  ${
+                    numAmount > 0 &&
+                    !isSwapping &&
+                    !(direction === 't22_to_spl'
+                      ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
+                      : parseFloat(userBalances?.[0]?.amount || '0') < numAmount)
+                      ? 'bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white shadow-lg'
+                      : 'bg-slate-200 dark:bg-[#2A2B31] text-slate-400 dark:text-gray-500 cursor-not-allowed'
+                  }
+                `}
+              >
+                {isSwapping && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
+                {isSwapping
+                  ? 'Executing...'
+                  : (
+                        direction === 't22_to_spl'
+                          ? parseFloat(userBalances?.[1]?.amount || '0') < numAmount
+                          : parseFloat(userBalances?.[0]?.amount || '0') < numAmount
+                      )
+                    ? t.lowBalance
+                    : t.btnSwap}
+              </button>
+            )}
           </div>
         </section>
 
