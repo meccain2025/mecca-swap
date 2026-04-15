@@ -19,7 +19,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { useLang } from '../lang-provider'
 
-
 // --- i18n Dictionary ---
 const translations = {
   ko: {
