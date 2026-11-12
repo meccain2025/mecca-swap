@@ -1,0 +1,70 @@
+name: Solana Localnet Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  solana-tests:
+    name: Build and Test SPL Swap
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.0/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Anchor AVM
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/otter-sec/anchor/master/avm/install | sh
+          echo "$HOME/.avm/bin" >> "$GITHUB_PATH"
+
+      - name: Install Anchor 0.32.1
+        run: |
+          avm install 0.32.1
+          avm use 0.32.1
+
+      - name: Verify toolchain
+        run: |
+          rustc --version
+          solana --version
+          anchor --version
+          node --version
+          npm --version
+
+      - name: Configure local wallet
+        run: |
+          mkdir -p "$HOME/.config/solana"
+          solana-keygen new \
+            --no-bip39-passphrase \
+            --silent \
+            --outfile "$HOME/.config/solana/id.json"
+          solana config set --url localhost
+          echo "ANCHOR_WALLET=$HOME/.config/solana/id.json" >> "$GITHUB_ENV"
+
+      - name: Build and run Localnet tests
+        run: |
+          cd anchor
+          anchor test
