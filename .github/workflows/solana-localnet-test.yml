@@ -36,13 +36,9 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install Anchor AVM
+            - name: Install Anchor 0.32.1
         run: |
-          curl -sSfL https://raw.githubusercontent.com/otter-sec/anchor/master/avm/install | sh
-          echo "$HOME/.avm/bin" >> "$GITHUB_PATH"
-
-      - name: Install Anchor 0.32.1
-        run: |
+          avm self-update
           avm install 0.32.1
           avm use 0.32.1
 
