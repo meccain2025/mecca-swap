@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-spl_swap = "6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq"
+spl_swap = "2u1feFZdMrWJCRR7dnQ2QBs2AmPcbywjiqNEk8rhDc37"
 
 [registry]
 url = "https://api.apr.dev"
@@ -17,3 +17,6 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "../node_modules/.bin/jest --preset ts-jest"
+
+[programs.devnet]
+spl_swap = "2u1feFZdMrWJCRR7dnQ2QBs2AmPcbywjiqNEk8rhDc37"
