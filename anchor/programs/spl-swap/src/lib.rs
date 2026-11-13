@@ -7,7 +7,7 @@ use anchor_spl::{
     token_interface::{Mint, TokenAccount, TokenInterface},
 };
 
-declare_id!("6Y8WgqjuiRfkPDLErc3ttzHznd4bsNAHiSBGFEmXVboq");
+declare_id!("2u1feFZdMrWJCRR7dnQ2QBs2AmPcbywjiqNEk8rhDc37");
 
 pub const MEA_SPL2022_MINT: Pubkey = pubkey!("mecySk7eSawDNfAXvW3CquhLyxyKaXExFXgUUbEZE1T");
 pub const MEA_SPL_MINT: Pubkey = pubkey!("MeaMMYyboH6vpRVGkQF8LkrmS5sj925UwFcaGcFcSem");

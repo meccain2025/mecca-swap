@@ -1,0 +1,100 @@
+name: Solana Localnet Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  solana-tests:
+    name: Build and Test SPL Swap
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.0/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Anchor Version Manager
+        run: |
+          cargo install --git https://github.com/otter-sec/anchor avm --force
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Install Anchor 0.32.1
+        run: |
+          avm install 0.32.1
+          avm use 0.32.1
+          anchor --version
+
+      - name: Verify toolchain
+        run: |
+          rustc --version
+          cargo --version
+          solana --version
+          anchor --version
+          node --version
+          npm --version
+
+      - name: Verify original MECCA Program ID
+        run: |
+          EXPECTED="2u1feFZdMrWJCRR7dnQ2QBs2AmPcbywjiqNEk8rhDc37"
+
+          grep -Fq "declare_id!(\"$EXPECTED\")" \
+            anchor/programs/spl-swap/src/lib.rs
+
+          grep -Fq "spl_swap = \"$EXPECTED\"" \
+            anchor/Anchor.toml
+
+          echo "Original MECCA Program ID verified."
+
+      - name: Configure temporary Localnet wallet
+        run: |
+          mkdir -p "$HOME/.config/solana"
+
+          solana-keygen new \
+            --no-bip39-passphrase \
+            --silent \
+            --outfile "$HOME/.config/solana/id.json"
+
+          solana config set --url localhost
+          echo "ANCHOR_WALLET=$HOME/.config/solana/id.json" >> "$GITHUB_ENV"
+
+      - name: Prepare temporary program keypair
+        run: |
+          mkdir -p anchor/target/deploy
+
+          solana-keygen new \
+            --no-bip39-passphrase \
+            --silent \
+            --outfile anchor/target/deploy/spl_swap-keypair.json
+
+          chmod 600 anchor/target/deploy/spl_swap-keypair.json
+
+          cd anchor
+          anchor keys sync
+
+      - name: Build and run Localnet tests
+        run: |
+          cd anchor
+          anchor test
